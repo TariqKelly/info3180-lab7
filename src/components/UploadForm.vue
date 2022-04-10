@@ -46,9 +46,9 @@
             fetch('/api/csrf-token')
                 .then((response) => response.json())
                 .then((data) => {
-                console.log(data);
-                self.csrf_token = data.csrf_token;
-            })
+                        console.log(data);
+                        self.csrf_token = data.csrf_token;
+                })
             }
         }
     }
