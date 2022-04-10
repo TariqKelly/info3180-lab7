@@ -6,8 +6,9 @@ This file creates your application.
 """
 
 from app import app
-from forms import UploadForm
+from app.forms import UploadForm
 from flask import render_template, request, jsonify, send_file
+from flask_wtf.csrf import generate_csrf
 from werkzeug.utils import secure_filename
 import os
 
@@ -24,9 +25,10 @@ def index():
 def upload():
     file_folder = app.config['UPLOAD_FOLDER']
     upload_form = UploadForm()
-
+    print(request)
     if request.method == 'POST':
         if upload_form.validate_on_submit():
+            print("Validated")
             file = upload_form.photo.data
             file_name = secure_filename(file.filename)
             file.save(os.path.join(file_folder, file_name))
@@ -35,10 +37,13 @@ def upload():
             filename = file_name,
             description = upload_form.description.data
             )
-        else:
-            return jsonify(errors = form_errors(upload_form))
+        
+        print("Not validated")
+        return jsonify(errors = form_errors(upload_form))
 
-
+@app.route('/api/csrf-token', methods=['GET'])
+def get_csrf_():
+    return jsonify({'csrf_token': generate_csrf()})
 
 ###
 # The functions below should be applicable to all Flask apps.
@@ -78,11 +83,11 @@ def add_header(response):
     return response
 
 
-@app.errorhandler(404)
+"""@app.errorhandler(404)
 def page_not_found(error):
-    """Custom 404 page."""
-    return render_template('404.html'), 404
+    Custom 404 page.
+    return render_template('404.html'), 404"""
 
 
 if __name__ == '__main__':
-    app.run(debug=True,host="0.0.0.0",port="8080")
+    app.run(debug=True,host="0.0.0.0",port="5990")
